@@ -58,7 +58,6 @@ when 'create_doc'
 	tmpfile = create_example_pdf
 	upload = mcp.upload_file(file: File.new(tmpfile))
 	File.delete(tmpfile)
-	puts upload['uploadId']
 	doc = mcp.create_document(sku: 'VIP-44525', upload: "https://uploads.documents.cimpress.io/v1/uploads/#{upload['uploadId']}")
 	puts "Document ID #{doc['Input']['DocId']} created"
 	puts "http://rendering.documents.cimpress.io/v1/uds/preview?width=500&instructions_uri" + URI.escape(doc['Output']['PreviewInstructionSourceUrl'], /\W/)
