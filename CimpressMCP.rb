@@ -15,6 +15,7 @@ class Client
             @username = username
             @password = password
         else
+            #TODO: look in ~/.cimpress/credentials for a refresh token
             raise "Require either a refresh token or a username and password"
         end
         @tokens = {}
@@ -55,6 +56,18 @@ class Client
             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
         )
 	    return JSON.parse(response)
+    end
+
+    def upload_file(file:)
+        response = RestClient::Request.execute(
+            method: :post,
+            url: 'https://uploads.documents.cimpress.io/v1/uploads',
+            headers: {'Authorization': "Bearer #{get_token(client_id: 'WuPUpCSkomz4mtPxCIXbLdYhgOLf4fhJ')}"},
+            payload: { :body => file },
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        #returns an array, but we only ever send one file, so return the first element
+	    return JSON.parse(response)[0]
     end
 end
 
