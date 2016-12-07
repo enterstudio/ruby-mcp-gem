@@ -2,6 +2,7 @@ module CimpressMCP
 require 'net/http'
 require 'openssl'
 require 'json'
+require 'rest-client'
 
 class Client
     def initialize(refresh_token: nil, username: nil, password: nil)
@@ -21,8 +22,6 @@ class Client
 
     def get_token(client_id:)
         #TODO cache tokens by client_id
-        uri = URI('https://cimpress.auth0.com/oauth/ro')
-        req = Net::HTTP::Post.new(uri)
         form_data = {
             'client_id' => client_id,
             #TODO: how to pick the right connection?
@@ -36,27 +35,26 @@ class Client
             form_data['username'] = @username
             form_data['password'] = @password
         end
-        req.set_form_data(form_data)
 
-	    http = Net::HTTP.new(uri.hostname, uri.port)
-	    http.use_ssl = true
-	    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-	    #http.set_debug_output($stderr)
-	    response = http.request(req)
-	    authdata = JSON.parse(response.body)
-	    return authdata['id_token']
+        response = RestClient::Request.execute(
+            method: :post,
+            url: 'https://cimpress.auth0.com/oauth/ro',
+            payload: form_data,
+            #TODO: trust correct CA keys for auth0 and cimpress endpoints
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        authdata = JSON.parse(response)
+        return authdata['id_token']
     end
 
     def list_products
-        uri = URI('https://api.cimpress.io/vcs/printapi/v1/partner/products')
-	    http = Net::HTTP.new(uri.hostname, uri.port)
-	    http.use_ssl = true
-	    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-	    req = Net::HTTP::Get.new(uri)
-        token = get_token(client_id: '4GtkxJhz0U1bdggHMdaySAy05IV4MEDV')
-	    req['Authorization'] = "Bearer #{token}"
-	    res = http.request(req)
-	    return JSON.parse(res.body)
+        response = RestClient::Request.execute(
+            method: :get,
+            url: 'https://api.cimpress.io/vcs/printapi/v1/partner/products',
+            headers: {'Authorization': "Bearer #{get_token(client_id: '4GtkxJhz0U1bdggHMdaySAy05IV4MEDV')}"},
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+	    return JSON.parse(response)
     end
 end
 
