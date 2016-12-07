@@ -3,6 +3,7 @@ require 'net/http'
 require 'openssl'
 require 'json'
 require 'rest-client'
+require 'securerandom'
 
 class Client
     def initialize(refresh_token: nil, username: nil, password: nil)
@@ -68,6 +69,26 @@ class Client
         )
         #returns an array, but we only ever send one file, so return the first element
 	    return JSON.parse(response)[0]
+    end
+
+    def create_document(sku:, upload:)
+        docid = SecureRandom.uuid
+        doc_request = <<-DOC
+            {
+            "McpSku": "#{sku}",
+            "Pdfs": [ "#{upload}" ],
+            "PositioningScheme": "auto",
+            "RotationScheme": "auto"
+            }
+        DOC
+        response = RestClient::Request.execute(
+            method: :post,
+            url: "https://orchestration.documents.cimpress.io/v1/fullbleed/#{docid}?async=false",
+            headers: {content_type: :json, 'Authorization': "Bearer #{get_token(client_id: 'KXae6kIBE9DcSqHRyQB92PytnbdgykQL')}"},
+            payload: doc_request,
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        return JSON.parse(response)
     end
 end
 
