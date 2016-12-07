@@ -6,6 +6,20 @@ require 'uri'
 
 require_relative "CimpressMCP.rb"
 
+#Creates an example pdf document and fills it with random content.
+def create_example_pdf
+	tmpfile = Dir::Tmpname.make_tmpname(['MCPDOC', '.pdf'], nil)
+	Prawn::Document.generate(tmpfile, :page_size => "A6",:page_layout => :landscape, :margin => 0) do
+		stroke_circle [0, 0], 10
+		bounding_box([25, bounds.height-25], :width => bounds.width-50, :height => bounds.height-50) do
+			stroke_axis(:negative_axes_length => 15, :step_length => 50)
+			stroke_circle [0, 0], 10
+			text "Hello MCP!"
+		end
+	end
+	return tmpfile
+end
+
 options = {}
 optparse = OptionParser.new do |opts|
 	opts.on('-u', '--username USERNAME', 'cimpress open username') do |user|
@@ -28,30 +42,32 @@ if options[:user]
 elsif options[:refresh_token]
 	mcp = CimpressMCP::Client.new(refresh_token: options[:refresh_token])
 else
-	"Require either a refresh token or a username and password"
+	puts "Please input either a refresh token or a username and password"
 end
 
 case options[:mode]
+
+  #List all the products from the staging print fulfillment API.
 when 'list_products'
     mcp.list_products.each { |product|
 		puts "#{product['Sku']}: #{product['ProductName']}"
 	}
-when 'create_doc'
 
-	tmpfile = Dir::Tmpname.make_tmpname(['MCPDOC', '.pdf'], nil)
-	Prawn::Document.generate(tmpfile, :page_size => "A6",:page_layout => :landscape, :margin => 0) do
-		stroke_circle [0, 0], 10
-		bounding_box([25, bounds.height-25], :width => bounds.width-50, :height => bounds.height-50) do
-			stroke_axis(:negative_axes_length => 15, :step_length => 50)
-			stroke_circle [0, 0], 10
-			text "Hello MCP!"
-		end
-	end
+  #Creates a .pdf document with some filler content, uploads it and creates a printable document
+when 'create_doc'
+	tmpfile = create_example_pdf
 	upload = mcp.upload_file(file: File.new(tmpfile))
 	File.delete(tmpfile)
+	puts upload['uploadId']
 	doc = mcp.create_document(sku: 'VIP-44525', upload: "https://uploads.documents.cimpress.io/v1/uploads/#{upload['uploadId']}")
 	puts "Document ID #{doc['Input']['DocId']} created"
 	puts "http://rendering.documents.cimpress.io/v1/uds/preview?width=500&instructions_uri" + URI.escape(doc['Output']['PreviewInstructionSourceUrl'], /\W/)
+	#Creates a .pdf document with some filler content and attempt to rasterize it
+when 'rasterize_doc'
+		tmpfile = create_example_pdf
+		rasterizeResponse = mcp.rasterize_doc(file: File.new(tmpfile))
+		File.delete(tmpfile)
+		puts rasterizeResponse['ResultUrl']
 else
-    puts 'unknown command'
+    puts "Unknown mode specified."
 end
