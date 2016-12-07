@@ -58,6 +58,20 @@ class Client
 	    return JSON.parse(response)
     end
 
+    def rasterize_doc(file:)
+        response = RestClient::Request.execute(
+            method: :post,
+            url: 'https://rasterization.prepress.documents.cimpress.io/rasterize/v1',
+            headers: {'Authorization': "Bearer #{get_token(client_id: '3Y3QAMHT1CQYaCTtuyhymxfBcznVoZN9')}",
+                      'Content-Type': "application/json",
+                      'Accept': "application/json"},
+            payload: { :body => file },
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        puts "Response: #{response}"
+        return JSON.parse(response)
+    end
+
     def upload_file(file:)
         response = RestClient::Request.execute(
             method: :post,
