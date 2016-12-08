@@ -6,18 +6,15 @@ require 'rest-client'
 require 'securerandom'
 
 class Client
-    def initialize(refresh_token: nil, username: nil, password: nil)
+    def initialize(username: nil, password: nil)
         #prefer a refresh token
-        if refresh_token
-            @authmode = :token
-            @token = token
-        elsif username
+        if username
             @authmode = :userpw
             @username = username
             @password = password
         else
-            #TODO: look in ~/.cimpress/credentials for a refresh token
-            raise "Require either a refresh token or a username and password"
+            #TODO: implement a storable token authentication method
+            raise "Require authentication information"
         end
         @tokens = {}
     end
@@ -27,24 +24,21 @@ class Client
         form_data = {
             'client_id' => client_id,
             #TODO: how to pick the right connection?
-            'connection' => 'CimpressADFS',
-            'scope' => 'openid email app_metadata'
+            'connection'=> 'CimpressADFS',
+            'scope' => 'openid email app_metadata',
         }
         case @authmode
-        when :token
-            raise "not implemented"
         when :userpw
             form_data['username'] = @username
             form_data['password'] = @password
+            response = RestClient::Request.execute(
+                method: :post,
+                url: 'https://cimpress.auth0.com/oauth/ro',
+                payload: form_data,
+                #TODO: trust correct CA keys for auth0 and cimpress endpoints
+                verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+            )
         end
-
-        response = RestClient::Request.execute(
-            method: :post,
-            url: 'https://cimpress.auth0.com/oauth/ro',
-            payload: form_data,
-            #TODO: trust correct CA keys for auth0 and cimpress endpoints
-            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
-        )
         authdata = JSON.parse(response)
         return authdata['id_token']
     end

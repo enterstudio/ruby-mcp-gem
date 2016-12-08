@@ -25,9 +25,6 @@ optparse = OptionParser.new do |opts|
 	opts.on('-u', '--username USERNAME', 'cimpress open username') do |user|
 		options[:user] = user
 	end
-	opts.on('-t', '--token REFRESH_TOKEN', 'refresh token') do |refresh_token|
-		options[:refresh_token] = refresh_token
-	end
 	opts.on('-m', '--mode MODE', 'command mode - operation to run') do |mode|
 		options[:mode] = mode
 	end
@@ -39,10 +36,8 @@ if options[:user]
 	password = STDIN.noecho(&:gets).chomp
 	puts
 	mcp = CimpressMCP::Client.new(username: options[:user], password: password )
-elsif options[:refresh_token]
-	mcp = CimpressMCP::Client.new(refresh_token: options[:refresh_token])
 else
-	puts "Please input either a refresh token or a username and password"
+	puts "username required"
 end
 
 case options[:mode]
