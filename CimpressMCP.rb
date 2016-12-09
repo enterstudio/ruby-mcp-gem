@@ -98,6 +98,20 @@ class Client
         )
         return JSON.parse(response)
     end
+
+    def get_fulfillment_recommendations(sku:, quantity:, country:, postal_code:)
+        response = RestClient::Request.execute(
+            method: :get,
+            url: "https://recommendations.commerce.cimpress.io/v3/fulfillmentrecommendations/#{sku}",
+            headers: {
+                content_type: :json,
+                'Authorization': "Bearer #{get_token(client_id: '0o9e54NwpXutAxVkylQXzhoRZN47NEGy')}",
+                params: {quantity: quantity, country: country, postalCode: postal_code}
+            },
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        return JSON.parse(response)
+    end
 end
 
 end

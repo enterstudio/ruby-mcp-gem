@@ -62,6 +62,8 @@ when 'rasterize_doc'
 		rasterizeResponse = mcp.rasterize_doc(file: File.new(tmpfile))
 		File.delete(tmpfile)
 		puts rasterizeResponse['ResultUrl']
+when 'get_fulfillment_recommendations'
+	puts mcp.get_fulfillment_recommendations(sku: 'VIP-44525', quantity: 250, country: 'US', postal_code: '01331')
 else
     puts "Unknown mode specified."
 end
