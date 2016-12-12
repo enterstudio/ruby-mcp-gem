@@ -3,7 +3,13 @@ require 'io/console'
 require 'prawn'
 require 'tmpdir'
 require 'uri'
+<<<<<<< Updated upstream
 require 'CimpressMCP'
+=======
+require 'net/http'
+
+require_relative "CimpressMCP.rb"
+>>>>>>> Stashed changes
 
 #Creates an example pdf document and fills it with random content.
 def create_example_pdf
@@ -63,6 +69,9 @@ when 'rasterize_doc'
 		puts rasterizeResponse['ResultUrl']
 when 'get_fulfillment_recommendations'
 	puts mcp.get_fulfillment_recommendations(sku: 'VIP-44525', quantity: 250, country: 'US', postal_code: '01331')
+when 'create_barcode'
+  createBarcodeResponse = mcp.create_barcode()
+	puts createBarcodeResponse
 else
     puts "Unknown mode specified."
 end

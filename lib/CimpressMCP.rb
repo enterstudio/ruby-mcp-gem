@@ -53,6 +53,19 @@ class Client
 	    return JSON.parse(response)
     end
 
+    def create_barcode()
+        RestClient.log = $stdout
+        response = RestClient::Request.execute(
+            method: :get,
+            url: 'https://barcode.at.cimpress.io/v1/',
+            headers: {'Authorization': "Bearer #{get_token(client_id: 'lsbRM318dQg5W6yUBW9m8K0hPM9Qg1Uw')}",
+                      params: {text: "testing", barcodeType: "code128", textColor: "black", width:"300", height: "300"},
+                      'Accept': 'application/json'},
+
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        return JSON.parse(response)
+    end
     def rasterize_doc(file:)
         response = RestClient::Request.execute(
             method: :post,
