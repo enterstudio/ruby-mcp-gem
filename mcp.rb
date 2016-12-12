@@ -3,8 +3,7 @@ require 'io/console'
 require 'prawn'
 require 'tmpdir'
 require 'uri'
-
-require_relative "CimpressMCP.rb"
+require 'CimpressMCP'
 
 #Creates an example pdf document and fills it with random content.
 def create_example_pdf
