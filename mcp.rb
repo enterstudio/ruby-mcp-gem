@@ -3,13 +3,7 @@ require 'io/console'
 require 'prawn'
 require 'tmpdir'
 require 'uri'
-<<<<<<< Updated upstream
 require 'CimpressMCP'
-=======
-require 'net/http'
-
-require_relative "CimpressMCP.rb"
->>>>>>> Stashed changes
 
 #Creates an example pdf document and fills it with random content.
 def create_example_pdf
