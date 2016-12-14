@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
 
 require_relative "../mcp"
-Mcpcli::main
+x = Cli.new
+x.main(ARGV)

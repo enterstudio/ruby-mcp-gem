@@ -17,6 +17,16 @@ class Client
             raise "Require authentication information"
         end
         @tokens = {}
+
+        load_endpoint_config
+    end
+
+    #Reads the endpoint configuration file and converts it to a list of endpoint config blocks.
+    def load_endpoint_config
+      @config = YAML::load_file ('conf/config.yaml')
+
+      #Get all the service-specific configuration details.
+      @services = @config["services"]
     end
 
     def get_token(client_id:)
@@ -46,19 +56,19 @@ class Client
     def list_products
         response = RestClient::Request.execute(
             method: :get,
-            url: 'https://api.cimpress.io/vcs/printapi/v1/partner/products',
-            headers: {'Authorization': "Bearer #{get_token(client_id: '4GtkxJhz0U1bdggHMdaySAy05IV4MEDV')}"},
+            url: @services["staging_print_fulfillment_api"]["endpoint_url"],
+            headers: {'Authorization': "Bearer #{get_token(client_id: @services["staging_print_fulfillment_api"]["client_id"])}"},
             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
         )
 	    return JSON.parse(response)
     end
 
     def create_barcode()
-        RestClient.log = $stdout
+        puts
         response = RestClient::Request.execute(
             method: :get,
-            url: 'https://barcode.at.cimpress.io/v1/',
-            headers: {'Authorization': "Bearer #{get_token(client_id: 'lsbRM318dQg5W6yUBW9m8K0hPM9Qg1Uw')}",
+            url: @services["barcode_image_creator"]["endpoint_url"],
+            headers: {'Authorization': "Bearer #{get_token(client_id: @services["barcode_image_creator"]["client_id"])}",
                       params: {text: "testing", barcodeType: "code128", textColor: "black", width:"300", height: "300"},
                       'Accept': 'application/json'},
 
@@ -69,8 +79,8 @@ class Client
     def rasterize_doc(file:)
         response = RestClient::Request.execute(
             method: :post,
-            url: 'https://rasterization.prepress.documents.cimpress.io/rasterize/v1',
-            headers: {'Authorization': "Bearer #{get_token(client_id: '3Y3QAMHT1CQYaCTtuyhymxfBcznVoZN9')}",
+            url: @services["rasterization"]["endpoint_url"],
+            headers: {'Authorization': "Bearer #{get_token(client_id: @services["rasterization"]["client_id"])}",
                       'Content-Type': "application/json",
                       'Accept': "application/json"},
             payload: { :body => file },
