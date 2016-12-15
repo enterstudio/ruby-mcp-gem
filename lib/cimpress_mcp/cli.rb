@@ -1,13 +1,13 @@
+module Cimpress_mcp
 require 'optparse'
 require 'io/console'
 require 'prawn'
 require 'tmpdir'
 require 'uri'
-require 'CimpressMCP'
 require 'yaml'
+require 'cimpress_mcp'
 
 class Cli
-
 	#Creates an example pdf document and fills it with random content.
 	def create_example_pdf
 		tmpfile = Dir::Tmpname.make_tmpname(['MCPDOC', '.pdf'], nil)
@@ -38,7 +38,7 @@ class Cli
 			print "Password: "
 			password = STDIN.noecho(&:gets).chomp
 			puts
-			mcp = CimpressMCP::Client.new(username: options[:user], password: password )
+			mcp = Cimpress_mcp::Client.new(username: options[:user], password: password )
 		else
 			puts "username required"
 		end
@@ -78,9 +78,4 @@ class Cli
 	end
 
 end
-
-
-if __FILE__ == $0
-  x = Cli.new
-  x.main(ARGV)
 end

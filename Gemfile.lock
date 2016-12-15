@@ -1,7 +1,13 @@
+PATH
+  remote: .
+  specs:
+    CimpressMCP (0.0.1)
+      prawn
+      rest-client
+
 GEM
   remote: https://rubygems.org/
   specs:
-    CimpressMCP (0.0.0)
     activesupport (4.2.7.1)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
@@ -72,10 +78,8 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  CimpressMCP
+  CimpressMCP!
   airborne
-  prawn
-  rest-client
 
 BUNDLED WITH
    1.13.6

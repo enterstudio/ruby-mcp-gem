@@ -1,4 +1,4 @@
-module CimpressMCP
+module Cimpress_mcp
 require 'net/http'
 require 'openssl'
 require 'json'
@@ -136,5 +136,4 @@ class Client
         return JSON.parse(response)
     end
 end
-
 end
