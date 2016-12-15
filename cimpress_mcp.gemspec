@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name        = 'CimpressMCP'
+  s.name        = 'cimpress_mcp'
   s.version     = '0.0.1'
   s.date        = '2016-12-12'
   s.summary     = "Cimpress MCP"

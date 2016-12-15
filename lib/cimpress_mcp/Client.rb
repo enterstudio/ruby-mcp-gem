@@ -1,10 +1,9 @@
-module CimpressMCP
+module Cimpress_mcp
 require 'net/http'
 require 'openssl'
 require 'json'
 require 'rest-client'
 require 'securerandom'
-require_relative 'Cli'
 
 class Client
     def initialize(username: nil, password: nil)
@@ -137,5 +136,4 @@ class Client
         return JSON.parse(response)
     end
 end
-
 end

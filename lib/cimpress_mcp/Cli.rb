@@ -1,10 +1,9 @@
-module CimpressMCP
+module Cimpress_mcp
 require 'optparse'
 require 'io/console'
 require 'prawn'
 require 'tmpdir'
 require 'uri'
-require 'CimpressMCP'
 require 'yaml'
 
 class Cli
@@ -38,7 +37,7 @@ class Cli
 			print "Password: "
 			password = STDIN.noecho(&:gets).chomp
 			puts
-			mcp = CimpressMCP::Client.new(username: options[:user], password: password )
+			mcp = Cimpress_mcp::Client.new(username: options[:user], password: password )
 		else
 			puts "username required"
 		end
