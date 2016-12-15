@@ -1,3 +1,4 @@
+module CimpressMCP
 require 'optparse'
 require 'io/console'
 require 'prawn'
@@ -7,7 +8,6 @@ require 'CimpressMCP'
 require 'yaml'
 
 class Cli
-
 	#Creates an example pdf document and fills it with random content.
 	def create_example_pdf
 		tmpfile = Dir::Tmpname.make_tmpname(['MCPDOC', '.pdf'], nil)
@@ -78,9 +78,4 @@ class Cli
 	end
 
 end
-
-
-if __FILE__ == $0
-  x = Cli.new
-  x.main(ARGV)
 end
