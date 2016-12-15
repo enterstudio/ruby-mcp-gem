@@ -6,8 +6,7 @@ Gem::Specification.new do |s|
   s.description = "Client for the Cimpress mass customization platform"
   s.authors     = ["Cimpress"]
   s.email       = 'rubygem@cimpress.io'
-  s.files       = Dir["lib/**/*",
-                   "conf/config.yaml"]
+  s.files       = Dir["lib/**/*"]
   s.homepage    =
     'https://github.com/Cimpress-MCP/ruby-mcp-gem'
   s.license       = 'Apache-2.0'

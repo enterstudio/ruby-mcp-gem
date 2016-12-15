@@ -4,6 +4,7 @@ require 'openssl'
 require 'json'
 require 'rest-client'
 require 'securerandom'
+require 'cimpress_mcp/config'
 
 class Client
     def initialize(username: nil, password: nil)
@@ -17,17 +18,8 @@ class Client
             raise "Require authentication information"
         end
         @tokens = {}
-
-        load_endpoint_config
     end
 
-    #Reads the endpoint configuration file and converts it to a list of endpoint config blocks.
-    def load_endpoint_config
-      @config = YAML::load_file ('conf/config.yaml')
-
-      #Get all the service-specific configuration details.
-      @services = @config["services"]
-    end
 
     def get_token(client_id:)
         #TODO cache tokens by client_id
@@ -56,8 +48,8 @@ class Client
     def list_products
         response = RestClient::Request.execute(
             method: :get,
-            url: @services["staging_print_fulfillment_api"]["endpoint_url"],
-            headers: {'Authorization': "Bearer #{get_token(client_id: @services["staging_print_fulfillment_api"]["client_id"])}"},
+            url: SERVICES[:print_fulfillment_api][:endpoint_url] + "v1/partner/products",
+            headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:print_fulfillment_api][:client_id])}"},
             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
         )
 	    return JSON.parse(response)
@@ -67,8 +59,8 @@ class Client
         puts
         response = RestClient::Request.execute(
             method: :get,
-            url: @services["barcode_image_creator"]["endpoint_url"],
-            headers: {'Authorization': "Bearer #{get_token(client_id: @services["barcode_image_creator"]["client_id"])}",
+            url: SERVICES[:barcode_image_creator][:endpoint_url],
+            headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:barcode_image_creator][:client_id])}",
                       params: {text: "testing", barcodeType: "code128", textColor: "black", width:"300", height: "300"},
                       'Accept': 'application/json'},
 
@@ -79,8 +71,8 @@ class Client
     def rasterize_doc(file:)
         response = RestClient::Request.execute(
             method: :post,
-            url: @services["rasterization"]["endpoint_url"],
-            headers: {'Authorization': "Bearer #{get_token(client_id: @services["rasterization"]["client_id"])}",
+            url: SERVICES[:rasterization][:endpoint_url],
+            headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:rasterization][:client_id])}",
                       'Content-Type': "application/json",
                       'Accept': "application/json"},
             payload: { :body => file },
@@ -93,8 +85,8 @@ class Client
     def upload_file(file:)
         response = RestClient::Request.execute(
             method: :post,
-            url: 'https://uploads.documents.cimpress.io/v1/uploads',
-            headers: {'Authorization': "Bearer #{get_token(client_id: 'WuPUpCSkomz4mtPxCIXbLdYhgOLf4fhJ')}"},
+            url: SERVICES[:uploads][:endpoint_url],
+            headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:uploads][:client_id])}"},
             payload: { :body => file },
             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
         )
@@ -114,8 +106,8 @@ class Client
         DOC
         response = RestClient::Request.execute(
             method: :post,
-            url: "https://orchestration.documents.cimpress.io/v1/fullbleed/#{docid}?async=false",
-            headers: {content_type: :json, 'Authorization': "Bearer #{get_token(client_id: 'KXae6kIBE9DcSqHRyQB92PytnbdgykQL')}"},
+            url: SERVICES[:document_orchestration][:endpoint_url] + "fullbleed/#{docid}?async=false",
+            headers: {content_type: :json, 'Authorization': "Bearer #{get_token(client_id: SERVICES[:document_orchestration][:client_id])}"},
             payload: doc_request,
             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
         )
@@ -125,10 +117,10 @@ class Client
     def get_fulfillment_recommendations(sku:, quantity:, country:, postal_code:)
         response = RestClient::Request.execute(
             method: :get,
-            url: "https://recommendations.commerce.cimpress.io/v3/fulfillmentrecommendations/#{sku}",
+            url: SERVICES[:fulfillment_recommendations][:endpoint_url] + "fulfillmentrecommendations/#{sku}",
             headers: {
                 content_type: :json,
-                'Authorization': "Bearer #{get_token(client_id: '0o9e54NwpXutAxVkylQXzhoRZN47NEGy')}",
+                'Authorization': "Bearer #{get_token(client_id: SERVICES[:fulfillment_recommendations][:client_id])}",
                 params: {quantity: quantity, country: country, postalCode: postal_code}
             },
             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
