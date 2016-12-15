@@ -5,6 +5,7 @@ require 'prawn'
 require 'tmpdir'
 require 'uri'
 require 'yaml'
+require 'cimpress_mcp'
 
 class Cli
 	#Creates an example pdf document and fills it with random content.
