@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    CimpressMCP (0.0.1)
+    cimpress_mcp (0.0.1)
       prawn
       rest-client
 
@@ -78,8 +78,8 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  CimpressMCP!
   airborne
+  cimpress_mcp!
 
 BUNDLED WITH
    1.13.6

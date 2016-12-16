@@ -71,6 +71,8 @@ class Cli
 		when 'create_barcode'
 			createBarcodeResponse = mcp.create_barcode()
 			puts createBarcodeResponse
+			when 'health_check'
+				puts mcp.health_checks()
 		else
 				puts "Unknown mode specified."
 		end

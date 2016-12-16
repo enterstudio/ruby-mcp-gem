@@ -127,5 +127,21 @@ class Client
         )
         return JSON.parse(response)
     end
+
+    #Runs the health check command against all known services and returns
+    #a hash of key:'service name' value:boolean representing the check status.
+    def health_checks
+        SERVICES.each do |service_name, service_info|
+            puts "Health Checking this service URL:  #{service_info[:health_check_url]}"
+                response = RestClient::Request.execute(
+                    method: :get,
+                    url: service_info[:health_check_url]
+#                    headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:client_id])}"},
+#                    verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+                )
+            puts JSON.parse(response)
+        end
+    end
+
 end
 end
