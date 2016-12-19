@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require 'cimpress_mcp/cli'
+
+x = Cimpress_mcp::Cli.new
+x.main(ARGV)
