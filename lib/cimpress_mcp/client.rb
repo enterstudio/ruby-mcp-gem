@@ -55,6 +55,16 @@ class Client
 	    return JSON.parse(response)
     end
 
+    def get_surfaces(sku:)
+        response = RestClient::Request.execute(
+            method: :get,
+            url: SERVICES[:print_fulfillment_api][:endpoint_url] + "/v1/products/#{sku}/surfaces",
+            headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:print_fulfillment_api][:client_id])}"},
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+	    return JSON.parse(response)
+    end
+
     def create_barcode()
         puts
         response = RestClient::Request.execute(
