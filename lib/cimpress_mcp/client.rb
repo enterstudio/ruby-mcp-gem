@@ -82,6 +82,22 @@ class Client
         return JSON.parse(response)
     end
 
+    def clean_image(image_url:)
+        RestClient.log= 'stdout'
+        response = RestClient::Request.execute(
+            method: :post,
+            url: SERVICES[:doc_review_clean_image][:endpoint_url],
+            headers: {
+                'Authorization': "Bearer #{get_token(client_id: SERVICES[:doc_review_clean_image][:client_id])}",
+                'params': {fileUrl: "#{image_url}"},
+                'Content-Type': "application/json",
+                'Accept': "application/json"
+            },
+            payload: {:body => "{colorInfoList : [ColorInfo: {ThreadID : 'unique_string'}]" },
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        return JSON.parse(response)
+    end
     def upload_file(file:)
         response = RestClient::Request.execute(
             method: :post,
@@ -136,8 +152,6 @@ class Client
                 response = RestClient::Request.execute(
                     method: :get,
                     url: service_info[:health_check_url]
-#                    headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:client_id])}"},
-#                    verify_ssl: OpenSSL::SSL::VERIFY_NONE,
                 )
             puts JSON.parse(response)
         end

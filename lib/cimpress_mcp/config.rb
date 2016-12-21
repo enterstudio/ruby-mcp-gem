@@ -18,7 +18,7 @@ module Cimpress_mcp
         :uploads => {
             :client_id => 'WuPUpCSkomz4mtPxCIXbLdYhgOLf4fhJ',
             :health_check_url => '',
-            :endpoint_url => 'https://uploads.documents.cimpress.io/v1/uploads'
+            :endpoint_url => 'https://uploads.documents.cimpress.io/v1/uploads/'
         },
         :document_orchestration => {
             :client_id => 'KXae6kIBE9DcSqHRyQB92PytnbdgykQL',
@@ -29,6 +29,11 @@ module Cimpress_mcp
             :client_id => '0o9e54NwpXutAxVkylQXzhoRZN47NEGy',
             :health_check_url => '',
             :endpoint_url => 'https://recommendations.commerce.cimpress.io/v3/'
+        },
+        :doc_review_clean_image => {
+            :client_id => 'M1WTlwEiOHZ0xFIrmztdtlUM47qvqpBC',
+         :health_check_url => 'https://cleanimage.docreview.documents.cimpress.io/status/healthcheck',
+        :endpoint_url => 'https://cleanimage.docreview.documents.cimpress.io/v1/'
         }
     }
 end

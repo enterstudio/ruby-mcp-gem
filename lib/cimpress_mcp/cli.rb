@@ -71,6 +71,11 @@ class Cli
 		when 'create_barcode'
 			createBarcodeResponse = mcp.create_barcode()
 			puts createBarcodeResponse
+			when 'clean_image'
+				imageFile = File.open("assets/images/pixel_image.jpg", mode="r")
+				upload = mcp.upload_file(file: imageFile)
+				cleaned_image = mcp.clean_image(image_url: "https://uploads.documents.cimpress.io/v1/uploads/#{upload['uploadId']}")
+			  puts cleaned_image
 			when 'health_check'
 				puts mcp.health_checks()
 		else
