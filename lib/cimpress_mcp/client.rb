@@ -23,10 +23,24 @@ class Client
 
     def get_token(client_id:)
         #TODO cache tokens by client_id
+        #Internal auth domains are handled differently for now.
+        if @username.end_with?('cimpress.com') or
+                @username.end_with?('cimpress.net') or
+                @username.end_with?('vistaprint.com') or
+                @username.end_with?('vistaprint.net') or
+                @username.end_with?('albumprinter.com') or
+                @username.end_with?('druck.at') or
+                @username.end_with?('flprint.local') or
+                @username.end_with?('pixartprinting.com') or
+                @username.end_with?('tradeprint.co.uk') or
+                @username.end_with?('fotoknudsen.no')
+            connection = 'CimpressADFS'    
+        else
+            connection = 'default'
+        end
         form_data = {
             'client_id' => client_id,
-            #TODO: how to pick the right connection?
-            'connection'=> 'CimpressADFS',
+            'connection'=> connection,
             'scope' => 'openid email app_metadata',
         }
         case @authmode
@@ -49,6 +63,16 @@ class Client
         response = RestClient::Request.execute(
             method: :get,
             url: SERVICES[:print_fulfillment_api][:endpoint_url] + "v1/partner/products",
+            headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:print_fulfillment_api][:client_id])}"},
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+	    return JSON.parse(response)
+    end
+
+    def get_surfaces(sku:)
+        response = RestClient::Request.execute(
+            method: :get,
+            url: SERVICES[:print_fulfillment_api][:endpoint_url] + "/v1/products/#{sku}/surfaces",
             headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:print_fulfillment_api][:client_id])}"},
             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
         )
