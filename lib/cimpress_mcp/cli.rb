@@ -46,38 +46,45 @@ class Cli
 		case options[:mode]
 
 			#List all the products from the staging print fulfillment API.
-		when 'list_products'
+			when 'list_products'
 				mcp.list_products.each { |product|
-				puts "#{product['Sku']}: #{product['ProductName']}"
-			}
+					puts "#{product['Sku']}: #{product['ProductName']}"
+				}
+			
+			when 'get_product'
+				print "SKU: "
+				sku = gets.chomp
+				product = mcp.get_product(sku: sku)
 
-		#Creates a .pdf document with some filler content, uploads it and creates a printable document
-		when 'create_doc'
-			tmpfile = create_example_pdf
-			upload = mcp.upload_file(file: File.new(tmpfile))
-			File.delete(tmpfile)
-			doc = mcp.create_document(sku: 'VIP-44525', upload: "https://uploads.documents.cimpress.io/v1/uploads/#{upload['uploadId']}")
-			puts "Document ID #{doc['Input']['DocId']} created"
-			puts "http://rendering.documents.cimpress.io/v1/uds/preview?width=500&instructions_uri" + URI.escape(doc['Output']['PreviewInstructionSourceUrl'], /\W/)
+				puts "#{product}"
 
-    #Creates a .pdf document with some filler content and attempt to rasterize it
-		when 'rasterize_doc'
+			#Creates a .pdf document with some filler content, uploads it and creates a printable document
+			when 'create_doc'
 				tmpfile = create_example_pdf
-				rasterizeResponse = mcp.rasterize_doc(file: File.new(tmpfile))
+				upload = mcp.upload_file(file: File.new(tmpfile))
 				File.delete(tmpfile)
-				puts rasterizeResponse['ResultUrl']
-		when 'get_fulfillment_recommendations'
-			puts mcp.get_fulfillment_recommendations(sku: 'VIP-44525', quantity: 250, country: 'US', postal_code: '01331')
-		when 'create_barcode'
-			createBarcodeResponse = mcp.create_barcode()
-			puts createBarcodeResponse
-			when 'health_check'
-				puts mcp.health_checks()
-		else
-				puts "Unknown mode specified."
+				doc = mcp.create_document(sku: 'VIP-44525', upload: "https://uploads.documents.cimpress.io/v1/uploads/#{upload['uploadId']}")
+				puts "Document ID #{doc['Input']['DocId']} created"
+				puts "http://rendering.documents.cimpress.io/v1/uds/preview?width=500&instructions_uri" + URI.escape(doc['Output']['PreviewInstructionSourceUrl'], /\W/)
+
+		#Creates a .pdf document with some filler content and attempt to rasterize it
+			when 'rasterize_doc'
+					tmpfile = create_example_pdf
+					rasterizeResponse = mcp.rasterize_doc(file: File.new(tmpfile))
+					File.delete(tmpfile)
+					puts rasterizeResponse['ResultUrl']
+			when 'get_fulfillment_recommendations'
+				puts mcp.get_fulfillment_recommendations(sku: 'VIP-44525', quantity: 250, country: 'US', postal_code: '01331')
+			when 'create_barcode'
+				createBarcodeResponse = mcp.create_barcode()
+				puts createBarcodeResponse
+				when 'health_check'
+					puts mcp.health_checks()
+			else
+					puts "Unknown mode specified."
+			end
+
 		end
 
 	end
-
-end
 end
