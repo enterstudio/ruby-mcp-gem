@@ -5,6 +5,7 @@ require 'json'
 require 'rest-client'
 require 'securerandom'
 require 'cimpress_mcp/config'
+require 'erb'
 
 class Client
     def initialize(username: nil, password: nil)
@@ -81,7 +82,6 @@ class Client
         puts "Response: #{response}"
         return JSON.parse(response)
     end
-
     def clean_image(image_url:)
         RestClient.log= 'stdout'
         response = RestClient::Request.execute(
@@ -93,12 +93,33 @@ class Client
                 'Content-Type': "application/json",
                 'Accept': "application/json"
             },
-            payload: {:body => "{colorInfoList : [ColorInfo: {ThreadID : 'unique_string'}]" },
+            payload: "{colorInfoList : [ColorInfo: {ThreadID : 'unique_string'}]",
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        return JSON.parse(response)
+    end
+    def crispify_image(image_url:)
+
+        image_url = ERB::Util.url_encode(image_url)
+        puts "Image URL: #{image_url}"
+
+        RestClient.log= 'stdout'
+        response = RestClient::Request.execute(
+            method: :post,
+            url: SERVICES[:crispify][:endpoint_url],
+            headers: {
+                'Authorization': "Bearer #{get_token(client_id: SERVICES[:crispify][:client_id])}",
+                'params': {asynchronous: "false"},
+                'Content-Type': "application/json",
+                'Accept': "application/json"
+            },
+            payload: "{ImageUrl : #{image_url}}",
             verify_ssl: OpenSSL::SSL::VERIFY_NONE,
         )
         return JSON.parse(response)
     end
     def upload_file(file:)
+
         response = RestClient::Request.execute(
             method: :post,
             url: SERVICES[:uploads][:endpoint_url],

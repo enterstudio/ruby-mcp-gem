@@ -76,6 +76,11 @@ class Cli
 				upload = mcp.upload_file(file: imageFile)
 				cleaned_image = mcp.clean_image(image_url: "https://uploads.documents.cimpress.io/v1/uploads/#{upload['uploadId']}")
 			  puts cleaned_image
+      when 'crispify'
+        imageFile = File.open("assets/images/speckle_noise.gif", mode="r")
+        upload = mcp.upload_file(file: imageFile)
+        crisped_image = mcp.crispify_image(image_url: "https://uploads.documents.cimpress.io/v1/uploads/#{upload['uploadId']}")
+        puts crisped_image
 			when 'health_check'
 				puts mcp.health_checks()
 		else

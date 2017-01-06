@@ -34,6 +34,12 @@ module Cimpress_mcp
             :client_id => 'M1WTlwEiOHZ0xFIrmztdtlUM47qvqpBC',
          :health_check_url => 'https://cleanimage.docreview.documents.cimpress.io/status/healthcheck',
         :endpoint_url => 'https://cleanimage.docreview.documents.cimpress.io/v1/'
+        },
+        :crispify => {
+            :client_id => 'pl3q5J4khaLTaS7rkv73I87TrTlV7N4I',
+            :health_check_url => 'https://gpu.images.documents.cimpress.io/status/healthcheck',
+            :endpoint_url => 'https://gpu.images.documents.cimpress.io/crispify/v2/'
         }
+
     }
 end
