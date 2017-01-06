@@ -54,10 +54,17 @@ class Cli
 		case options[:mode]
 
 			#List all the products from the staging print fulfillment API.
-		when 'list_products'
+			when 'list_products'
 				mcp.list_products.each { |product|
-				puts "#{product['Sku']}: #{product['ProductName']}"
-			}
+					puts "#{product['Sku']}: #{product['ProductName']}"
+				}
+			
+			when 'get_product'
+				print "SKU: "
+				sku = gets.chomp
+				product = mcp.get_product(sku: sku)
+
+				puts "#{product}"
 
 		#Creates a .pdf document with some filler content, uploads it and creates a printable document
 		when 'create_doc'
@@ -68,10 +75,10 @@ class Cli
 			puts "Document ID #{doc['Input']['DocId']} created"
 			puts "http://rendering.documents.cimpress.io/v1/uds/preview?width=500&instructions_uri=" + URI.escape(doc['Output']['PreviewInstructionSourceUrl'], /\W/)
 
-    #Creates a .pdf document with some filler content and attempt to rasterize it
-		when 'rasterize_doc'
+			#Creates a .pdf document with some filler content, uploads it and creates a printable document
+			when 'create_doc'
 				tmpfile = create_example_pdf
-				rasterizeResponse = mcp.rasterize_doc(file: File.new(tmpfile))
+				upload = mcp.upload_file(file: File.new(tmpfile))
 				File.delete(tmpfile)
 				puts rasterizeResponse['ResultUrl']
 		when 'get_fulfillment_recommendations'
@@ -95,6 +102,4 @@ class Cli
 		end
 
 	end
-
-end
 end

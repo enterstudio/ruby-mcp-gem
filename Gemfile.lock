@@ -41,6 +41,10 @@ GEM
     rack (1.6.5)
     rack-test (0.6.3)
       rack (>= 1.0)
+    rest-client (2.0.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rest-client (2.0.0-x64-mingw32)
       ffi (~> 1.9)
       http-cookie (>= 1.0.2, < 2.0)
@@ -70,10 +74,12 @@ GEM
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
+    unf_ext (0.0.7.2)
     unf_ext (0.0.7.2-x64-mingw32)
     unf_ext (0.0.7.2-x86-mingw32)
 
 PLATFORMS
+  ruby
   x64-mingw32
   x86-mingw32
 
@@ -82,4 +88,4 @@ DEPENDENCIES
   cimpress_mcp!
 
 BUNDLED WITH
-   1.13.6
+   1.13.7
