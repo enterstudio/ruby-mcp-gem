@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'cimpress_mcp'
-  s.version     = '0.0.1'
-  s.date        = '2016-12-12'
+  s.version     = '0.0.2'
+  s.date        = '2017-01-06'
   s.summary     = "Cimpress MCP"
   s.description = "Client for the Cimpress mass customization platform"
   s.authors     = ["Cimpress"]
