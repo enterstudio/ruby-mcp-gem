@@ -130,14 +130,14 @@ class Client
 
     def create_document(sku:, upload:)
         docid = SecureRandom.uuid
-        doc_request = <<-DOC
-            {
-            "McpSku": "#{sku}",
-            "Pdfs": [ "#{upload}" ],
-            "PositioningScheme": "auto",
-            "RotationScheme": "auto"
-            }
-        DOC
+        req_body = {
+            :McpSku => "#{sku}",
+            :Pdfs => [ "#{upload}"],
+            :PositioningScheme => "auto",
+            :RotationScheme => "auto"
+        }
+        doc_request =  JSON.generate(req_body)
+
         response = RestClient::Request.execute(
             method: :post,
             url: SERVICES[:document_orchestration][:endpoint_url] + "fullbleed/#{docid}?async=false",
@@ -162,6 +162,22 @@ class Client
         return JSON.parse(response)
     end
 
+    def validate_api(swagger_url_to_validate:)
+        req_body = {:swagger_url => "#{swagger_url_to_validate}"}
+        validate_request =  JSON.generate(req_body)
+        response = RestClient::Request.execute(
+            method: :POST,
+            url: SERVICES[:api_validation][:endpoint_url] + "validate/",
+            headers: {
+                content_type: :json,
+                accept: :json,
+                'Authorization': "Bearer #{get_token(client_id: SERVICES[:api_validation][:client_id])}",
+            },
+            payload: validate_request,
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        return JSON.parse(response)
+    end
     #Runs the health check command against all known services and returns
     #a hash of key:'service name' value:boolean representing the check status.
     def health_checks
@@ -170,8 +186,6 @@ class Client
                 response = RestClient::Request.execute(
                     method: :get,
                     url: service_info[:health_check_url]
-#                    headers: {'Authorization': "Bearer #{get_token(client_id: SERVICES[:client_id])}"},
-#                    verify_ssl: OpenSSL::SSL::VERIFY_NONE,
                 )
             puts JSON.parse(response)
         end

@@ -29,6 +29,11 @@ module Cimpress_mcp
             :client_id => '0o9e54NwpXutAxVkylQXzhoRZN47NEGy',
             :health_check_url => '',
             :endpoint_url => 'https://recommendations.commerce.cimpress.io/v3/'
+        },
+        :api_validation => {
+            :client_id => 'LbiZHnAESDDfXhiqxjwvc7cPAEbaN2gP',
+            :health_check_url => 'https://api.cimpress.io/tools/api-validator/v1/healthcheck',
+            :endpoint_url => 'https://api.cimpress.io/tools/api-validator/v1/'
         }
     }
 end

@@ -81,12 +81,21 @@ class Cli
 				upload = mcp.upload_file(file: File.new(tmpfile))
 				File.delete(tmpfile)
 				puts rasterizeResponse['ResultUrl']
+		when 'validate_api'
+			print "Swagger API Url to validate: "
+			api_url = gets.chomp
+			validate_response = mcp.validate_api(swagger_url_to_validate: api_url)
+			if validate_response["failures"].any? then
+				puts "Failures: \n  #{validate_response['failures']}"
+			else
+				puts "Success. No errors found."
+			end
 		when 'get_fulfillment_recommendations'
 			puts mcp.get_fulfillment_recommendations(sku: 'VIP-44525', quantity: 250, country: 'US', postal_code: '01331')
 		when 'create_barcode'
 			createBarcodeResponse = mcp.create_barcode()
 			puts createBarcodeResponse
-			when 'health_check'
+    when 'health_check'
 				puts mcp.health_checks()
 		when 'test_product'
 			#make sure we can get the surface spec for the provided SKU
@@ -102,4 +111,5 @@ class Cli
 		end
 
 	end
+end
 end
