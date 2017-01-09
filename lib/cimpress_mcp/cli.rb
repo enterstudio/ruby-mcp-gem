@@ -12,7 +12,7 @@ class Cli
 	#Creates an example pdf document and fills it with random content.
 	def create_example_pdf(size: "A6", text: "Hello MCP!")
 		tmpfile = Dir::Tmpname.make_tmpname(['MCPDOC', '.pdf'], nil)
-		Prawn::Document.generate(tmpfile, :page_size => size,:page_layout => :landscape, :margin => 0) do
+		Prawn::Document.generate(tmpfile, :page_size => size,:page_layout => :portrait, :margin => 0) do
 			stroke_circle [0, 0], 10
 			bounding_box([25, bounds.height-25], :width => bounds.width-50, :height => bounds.height-50) do
 				stroke_axis(:negative_axes_length => 15, :step_length => 50)
