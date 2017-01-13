@@ -162,6 +162,20 @@ class Client
         return JSON.parse(response)
     end
 
+    def get_scene_render(document_reference:, width:)
+        response = RestClient::Request.execute(
+            method: :get,
+            url: SERVICES[:print_fulfillment_api][:endpoint_url] + 'v2/documents/scenes',
+            headers: {
+                content_type: :json,
+                'Authorization': "Bearer #{get_token(client_id: SERVICES[:print_fulfillment_api][:client_id])}",
+                params: {documentReferenceUrl: document_reference, width: width}
+            },
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        return JSON.parse(response)
+    end
+
     def validate_api(swagger_url_to_validate:)
         req_body = {:swagger_url => "#{swagger_url_to_validate}"}
         validate_request =  JSON.generate(req_body)
@@ -178,6 +192,7 @@ class Client
         )
         return JSON.parse(response)
     end
+
     #Runs the health check command against all known services and returns
     #a hash of key:'service name' value:boolean representing the check status.
     def health_checks
