@@ -24,7 +24,7 @@ class Client
     end
 
     def get_token(client_id:)
-        #check if we have a chached token, and that it doesn't expire in the next 30 seconds
+        #check if we have a cached token, and that it doesn't expire in the next 30 seconds
         if (@tokens[client_id] && @tokens[client_id][:exp] > Time.now.getutc.to_i+30)
             return @tokens[client_id][:token]
         end
