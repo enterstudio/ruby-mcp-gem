@@ -5,14 +5,17 @@ require 'json'
 require 'rest-client'
 require 'securerandom'
 require 'cimpress_mcp/config'
+require 'jwt'
 
 class Client
-    def initialize(username: nil, password: nil)
-        #prefer a refresh token
+    def initialize(username: nil, password: nil, refresh_token: nil)
         if username
             @authmode = :userpw
             @username = username
             @password = password
+        elsif refresh_token
+            @authmode = :refresh_token
+            @refresh_token = refresh_token
         else
             #TODO: implement a storable token authentication method
             raise "Require authentication information"
@@ -21,40 +24,64 @@ class Client
     end
 
     def get_token(client_id:)
-        #TODO cache tokens by client_id
-        #Internal auth domains are handled differently for now.
-        if @username.end_with?('cimpress.com') or
-                @username.end_with?('cimpress.net') or
-                @username.end_with?('vistaprint.com') or
-                @username.end_with?('vistaprint.net') or
-                @username.end_with?('albumprinter.com') or
-                @username.end_with?('druck.at') or
-                @username.end_with?('flprint.local') or
-                @username.end_with?('pixartprinting.com') or
-                @username.end_with?('tradeprint.co.uk') or
-                @username.end_with?('fotoknudsen.no')
-            connection = 'CimpressADFS'    
-        else
-            connection = 'default'
+        #check if we have a chached token, and that it doesn't expire in the next 30 seconds
+        if (@tokens[client_id] && @tokens[client_id][:exp] > Time.now.getutc.to_i+30)
+            return @tokens[client_id][:token]
         end
-        form_data = {
-            'client_id' => client_id,
-            'connection'=> connection,
-            'scope' => 'openid email app_metadata',
-        }
+
         case @authmode
-        when :userpw
-            form_data['username'] = @username
-            form_data['password'] = @password
-            response = RestClient::Request.execute(
-                method: :post,
-                url: 'https://cimpress.auth0.com/oauth/ro',
-                payload: form_data,
-                #TODO: trust correct CA keys for auth0 and cimpress endpoints
-                verify_ssl: OpenSSL::SSL::VERIFY_NONE,
-            )
+            when :userpw
+                #Internal auth domains are handled differently for now.
+                if @username.end_with?('cimpress.com') or
+                        @username.end_with?('cimpress.net') or
+                        @username.end_with?('vistaprint.com') or
+                        @username.end_with?('vistaprint.net') or
+                        @username.end_with?('albumprinter.com') or
+                        @username.end_with?('druck.at') or
+                        @username.end_with?('flprint.local') or
+                        @username.end_with?('pixartprinting.com') or
+                        @username.end_with?('tradeprint.co.uk') or
+                        @username.end_with?('fotoknudsen.no')
+                    connection = 'CimpressADFS'    
+                else
+                    connection = 'default'
+                end
+                form_data = {
+                    'client_id' => client_id,
+                    'connection'=> connection,
+                    'scope' => 'openid email app_metadata',
+                    'username' => @username,
+                    'password' => @password
+                }
+                response = RestClient::Request.execute(
+                    method: :post,
+                    url: 'https://cimpress.auth0.com/oauth/ro',
+                    payload: form_data,
+                    #TODO: trust correct CA keys for auth0 and cimpress endpoints
+                    verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+                )
+            when :refresh_token
+                form_data = {
+                    'client_id' => 'QkxOvNz4fWRFT6vcq79ylcIuolFz2cwN',
+                    'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                    'api_type' => 'auth0',
+                    'scope' => 'openid name email',
+                    'target' => client_id,
+                    'refresh_token' => @refresh_token
+                }
+                response = RestClient::Request.execute(
+                    method: :post,
+                    url: 'https://cimpress.auth0.com/delegation',
+                    payload: form_data,
+                    #TODO: trust correct CA keys for auth0 and cimpress endpoints
+                    verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+                )
         end
         authdata = JSON.parse(response)
+        @tokens[client_id] = {
+            :exp => JWT.decode(authdata['id_token'], nil, false)[0]['exp'],
+            :token => authdata['id_token']
+        }
         return authdata['id_token']
     end
 
