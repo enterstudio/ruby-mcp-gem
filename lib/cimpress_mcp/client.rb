@@ -175,6 +175,20 @@ class Client
         return JSON.parse(response)
     end
 
+    def get_surface_set(sku:)
+        response = RestClient::Request.execute(
+            method: :get,
+            url: SERVICES[:surface_specification][:endpoint_url] + "/v3/calculatedSurfaceSets/#{sku}",
+            headers: {
+                content_type: :json,
+                'Authorization': "Bearer #{get_token(client_id: SERVICES[:surface_specification][:client_id])}"
+            },
+            verify_ssl: OpenSSL::SSL::VERIFY_NONE,
+        )
+        return JSON.parse(response)
+    end
+    
+
     def get_fulfillment_recommendations(sku:, quantity:, country:, postal_code:)
         response = RestClient::Request.execute(
             method: :get,

@@ -34,6 +34,11 @@ module Cimpress_mcp
             :client_id => 'LbiZHnAESDDfXhiqxjwvc7cPAEbaN2gP',
             :health_check_url => 'https://api.cimpress.io/tools/api-validator/v1/healthcheck',
             :endpoint_url => 'https://api.cimpress.io/tools/api-validator/v1/'
+        },
+        :surface_specification => {
+            :client_id => '6bXolCg7bnB3Xnwg3qMBTBms92eLXv4D',
+            :health_check_url => 'https://surface.products.cimpress.io/livecheck',
+            :endpoint_url => 'https://surface.products.cimpress.io/'
         }
     }
 end
