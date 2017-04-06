@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'rest-client'
   s.add_runtime_dependency 'prawn'
+  s.add_runtime_dependency 'jwt'
 
   s.add_development_dependency 'airborne'
 
